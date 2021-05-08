@@ -1,6 +1,5 @@
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
-const clear = document.getElementById("clear");
 let isDrag = false;
 
 // 描画処理
@@ -41,8 +40,18 @@ canvas.addEventListener("touchmove", (e) => {
 });
 
 // 全消しボタン
+const clear = document.getElementById("clear");
 clear.addEventListener("click", () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+// ダウンロードボタン
+const download = document.getElementById("download");
+download.addEventListener("click", () => {
+  let link = document.createElement("a");
+  link.href = canvas.toDataURL("image/png");
+  link.download = "drawingIMG.png";
+  link.click();
 });
 
 // 太さ調整
@@ -53,7 +62,16 @@ range.addEventListener("change", () => {
 });
 
 // 色関係
-const colors = ["#000", "#fff", "#f00", "#0f0", "#00f", "#ff0", "#0ff", "#f0f"];
+const colors = [
+  "#000000",
+  "#ffffff",
+  "#ff0000",
+  "#00ff00",
+  "#0000ff",
+  "#ffff00",
+  "#00ffff",
+  "#ff00ff",
+];
 const colorBtns = document.querySelectorAll("button.color");
 let selectColor = 0;
 colorBtns.forEach((el, index) => {
