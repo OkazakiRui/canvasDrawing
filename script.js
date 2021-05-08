@@ -1,6 +1,8 @@
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 const clear = document.getElementById("clear");
+const range = document.getElementById("range");
+const rangeValue = document.getElementById("rangeValue");
 let isDrag = false;
 
 // 描画処理
@@ -8,8 +10,7 @@ function draw(x, y) {
   if (!isDrag) {
     return;
   }
-
-  context.lineWidth = 5;
+  context.lineWidth = range.value;
   context.lineTo(x, y);
   context.stroke();
 }
@@ -43,4 +44,9 @@ canvas.addEventListener("touchmove", (e) => {
 // 全消しボタン
 clear.addEventListener("click", () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+// 太さ調整
+range.addEventListener("change", () => {
+  rangeValue.textContent = range.value;
 });
