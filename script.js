@@ -84,3 +84,8 @@ colorBtns.forEach((el, index) => {
     el.style.transform = "scale(1.2)";
   });
 });
+
+// IOSのスクロール無効化
+window.addEventListener("touchmove", function (event) {
+  event.preventDefault();
+});
