@@ -6,4 +6,9 @@ canvas {
 p {
   font-weight: bold;
 }
+
+html,
+body {
+  overflow: hidden;
+}
 /*# sourceMappingURL=style.css.map */
