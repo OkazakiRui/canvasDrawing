@@ -59,7 +59,7 @@ download.addEventListener("click", () => {
 // 太さ調整
 const range = document.getElementById("range");
 const rangeValue = document.getElementById("rangeValue");
-range.addEventListener("change", () => {
+range.addEventListener("input", () => {
   rangeValue.textContent = range.value;
 });
 
