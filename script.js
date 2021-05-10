@@ -13,28 +13,25 @@ function draw(x, y) {
   context.stroke();
 }
 
-// マウスの処理
-canvas.addEventListener("mousedown", () => {
+function drawStart() {
   context.beginPath();
   isDrag = true;
-});
-canvas.addEventListener("mouseup", () => {
+}
+function drawEnd() {
   context.closePath();
   isDrag = false;
-});
+}
+
+// マウスの処理
+canvas.addEventListener("mousedown", drawStart);
+canvas.addEventListener("mouseup", drawEnd);
 canvas.addEventListener("mousemove", (e) => {
   draw(e.layerX, e.layerY);
 });
 
 // モバイルの処理
-canvas.addEventListener("touchstart", () => {
-  context.beginPath();
-  isDrag = true;
-});
-canvas.addEventListener("touchend", () => {
-  context.closePath();
-  isDrag = false;
-});
+canvas.addEventListener("touchstart", drawStart);
+canvas.addEventListener("touchend", drawEnd);
 canvas.addEventListener("touchmove", (e) => {
   draw(e.layerX, e.layerY);
 });
