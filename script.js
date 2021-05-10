@@ -1,6 +1,7 @@
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 let isDrag = false;
+let eraserBool = false;
 
 // 描画処理
 function drawStart() {
@@ -14,6 +15,11 @@ function drawEnd() {
 }
 function draw(x, y) {
   if (!isDrag) return;
+  if (eraserBool) {
+    context.globalCompositeOperation = "destination-out";
+  } else {
+    context.globalCompositeOperation = "source-over";
+  }
   context.strokeStyle = colors[selectColor];
   context.lineWidth = range.value;
   context.lineTo(x, y);
@@ -34,13 +40,14 @@ canvas.addEventListener("touchmove", (e) => {
   draw(e.layerX, e.layerY);
 });
 
-// 全消しボタン
+// 全消し
 const clear = document.getElementById("clear");
 clear.addEventListener("click", () => {
+  beforeDraw();
   context.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-// ダウンロードボタン
+// ダウンロード
 const download = document.getElementById("download");
 download.addEventListener("click", () => {
   let link = document.createElement("a");
@@ -56,7 +63,7 @@ range.addEventListener("change", () => {
   rangeValue.textContent = range.value;
 });
 
-// 色
+// カラーパレット
 const colors = [
   "#000000",
   "#ffffff",
@@ -88,7 +95,7 @@ window.addEventListener("touchmove", function (event) {
 });
 
 // スタック配列
-const maxStack = 5;
+const maxStack = 30;
 let undoStack = [];
 let redoStack = [];
 
@@ -96,26 +103,44 @@ let redoStack = [];
 function beforeDraw() {
   redoStack = [];
   if (undoStack.length >= maxStack) undoStack.pop();
-  undoStack.unshift(context.getImageData(0, 0, 350, 350));
+  undoStack.unshift(
+    context.getImageData(0, 0, canvas.clientWidth, canvas.clientHeight)
+  );
   // console.log(undoStack);
 }
 
-// 元に戻すボタン
+// 元に戻す
 const undoBtn = document.getElementById("undo");
 function undo() {
   if (undoStack.length <= 0) return;
-  redoStack.unshift(context.getImageData(0, 0, 350, 350));
+  redoStack.unshift(
+    context.getImageData(0, 0, canvas.clientWidth, canvas.clientHeight)
+  );
   const imageData = undoStack.shift();
   context.putImageData(imageData, 0, 0);
 }
 undoBtn.addEventListener("click", undo);
 
-// やり直しボタン
+// やり直し
 const redoBtn = document.getElementById("redo");
 function redo() {
   if (redoStack.length <= 0) return;
-  undoStack.unshift(context.getImageData(0, 0, 350, 350));
+  undoStack.unshift(
+    context.getImageData(0, 0, canvas.clientWidth, canvas.clientHeight)
+  );
   const imageData = redoStack.shift();
   context.putImageData(imageData, 0, 0);
 }
 redoBtn.addEventListener("click", redo);
+
+// 消しゴム
+const eraserBtn = document.getElementById("eraser");
+eraserBtn.style.transform = "scale(0.8)";
+eraserBtn.addEventListener("click", () => {
+  eraserBool = !eraserBool;
+  if (eraserBool) {
+    eraserBtn.style.transform = "scale(1)";
+  } else {
+    eraserBtn.style.transform = "scale(0.8)";
+  }
+});
