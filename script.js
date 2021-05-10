@@ -3,23 +3,21 @@ const context = canvas.getContext("2d");
 let isDrag = false;
 
 // 描画処理
-function draw(x, y) {
-  if (!isDrag) {
-    return;
-  }
-  context.strokeStyle = colors[selectColor];
-  context.lineWidth = range.value;
-  context.lineTo(x, y);
-  context.stroke();
-}
-
 function drawStart() {
+  beforeDraw();
   context.beginPath();
   isDrag = true;
 }
 function drawEnd() {
   context.closePath();
   isDrag = false;
+}
+function draw(x, y) {
+  if (!isDrag) return;
+  context.strokeStyle = colors[selectColor];
+  context.lineWidth = range.value;
+  context.lineTo(x, y);
+  context.stroke();
 }
 
 // マウスの処理
@@ -58,7 +56,7 @@ range.addEventListener("change", () => {
   rangeValue.textContent = range.value;
 });
 
-// 色関係
+// 色
 const colors = [
   "#000000",
   "#ffffff",
@@ -69,6 +67,8 @@ const colors = [
   "#00ffff",
   "#ff00ff",
 ];
+
+// 選択色
 const colorBtns = document.querySelectorAll("button.color");
 let selectColor = 0;
 colorBtns.forEach((el, index) => {
@@ -86,3 +86,36 @@ colorBtns.forEach((el, index) => {
 window.addEventListener("touchmove", function (event) {
   event.preventDefault();
 });
+
+// スタック配列
+const maxStack = 5;
+let undoStack = [];
+let redoStack = [];
+
+// 描画前に現在のcanvasを保存
+function beforeDraw() {
+  redoStack = [];
+  if (undoStack.length >= maxStack) undoStack.pop();
+  undoStack.unshift(context.getImageData(0, 0, 350, 350));
+  // console.log(undoStack);
+}
+
+// 元に戻すボタン
+const undoBtn = document.getElementById("undo");
+function undo() {
+  if (undoStack.length <= 0) return;
+  redoStack.unshift(context.getImageData(0, 0, 350, 350));
+  const imageData = undoStack.shift();
+  context.putImageData(imageData, 0, 0);
+}
+undoBtn.addEventListener("click", undo);
+
+// やり直しボタン
+const redoBtn = document.getElementById("redo");
+function redo() {
+  if (redoStack.length <= 0) return;
+  undoStack.unshift(context.getImageData(0, 0, 350, 350));
+  const imageData = redoStack.shift();
+  context.putImageData(imageData, 0, 0);
+}
+redoBtn.addEventListener("click", redo);
