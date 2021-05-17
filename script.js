@@ -25,7 +25,9 @@ function draw(x, y) {
   }
   context.strokeStyle = colors[selectColor];
   context.lineWidth = range.value;
+
   context.lineTo(x * 2, y * 2);
+
   context.stroke();
 }
 
@@ -149,29 +151,73 @@ eraserBtn.addEventListener("click", () => {
 });
 
 // 画像読み込み
+const maxWidth = 700;
+const maxHeight = 700;
+
 const loadingBtn = document.getElementById("loading");
 loadingBtn.addEventListener("click", () => {
+  // input要素の作成
   let input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
   input.click();
 
   input.addEventListener("change", () => {
-    var file = input.files[0];
-    if (!file.type.match(/^image\/(png|jpeg|gif)$/)) return;
+    console.log(input.files[0]);
+    file = input.files[0];
 
-    var image = new Image();
-    var reader = new FileReader();
+    // 画像じゃなかった場合
+    if (file.type != "image/jpeg" && file.type != "image/png") {
+      file = null;
+      blob = null;
+      console.log("選択されたファイルが画像ではありません");
+      return;
+    }
 
-    reader.onload = function (evt) {
-      image.onload = function () {
-        // $("#canvas").attr("width", image.width);
-        // $("#canvas").attr("height", image.height);
-        context.drawImage(image, 0, 0); //canvasに画像を転写
-      };
+    const image = new Image();
+    const render = new FileReader();
+    render.addEventListener("load", (e) => {
+      image.addEventListener("load", () => {
+        let width, height;
 
-      image.src = evt.target.result;
-    };
-    reader.readAsDataURL(file);
+        if (image.width > image.height) {
+          const raito = image.height / image.width;
+          width = maxHeight;
+          height = maxHeight * raito;
+        } else {
+          const raito = image.width / image.height;
+          width = maxWidth;
+          height = maxWidth * raito;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // 画像を消す
+        context.clearRect(0, 0, width, height);
+
+        // canvasに描画する
+        context.drawImage(
+          image,
+          0,
+          0,
+          image.width,
+          image.height,
+          0,
+          0,
+          width,
+          height
+        );
+        if (image.width > image.height) {
+          canvas.style.width = "350px";
+          canvas.style.height = 350 * (image.height / image.width) + "px";
+        } else {
+          canvas.style.width = 350 * (image.width / image.height) + "px";
+          canvas.style.height = "350px";
+        }
+      });
+      image.src = e.target.result;
+    });
+    render.readAsDataURL(file);
   });
 });
