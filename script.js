@@ -147,3 +147,31 @@ eraserBtn.addEventListener("click", () => {
     eraserBtn.style.transform = "scale(0.8)";
   }
 });
+
+// 画像読み込み
+const loadingBtn = document.getElementById("loading");
+loadingBtn.addEventListener("click", () => {
+  let input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.click();
+
+  input.addEventListener("change", () => {
+    var file = input.files[0];
+    if (!file.type.match(/^image\/(png|jpeg|gif)$/)) return;
+
+    var image = new Image();
+    var reader = new FileReader();
+
+    reader.onload = function (evt) {
+      image.onload = function () {
+        // $("#canvas").attr("width", image.width);
+        // $("#canvas").attr("height", image.height);
+        context.drawImage(image, 0, 0); //canvasに画像を転写
+      };
+
+      image.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+});
