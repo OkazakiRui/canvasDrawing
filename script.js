@@ -3,6 +3,9 @@ const context = canvas.getContext("2d");
 let isDrag = false;
 let eraserBool = false;
 
+// 画質
+canvas.style.height = "350px";
+
 // 描画処理
 function drawStart() {
   beforeDraw();
@@ -22,7 +25,7 @@ function draw(x, y) {
   }
   context.strokeStyle = colors[selectColor];
   context.lineWidth = range.value;
-  context.lineTo(x, y);
+  context.lineTo(x * 2, y * 2);
   context.stroke();
 }
 
